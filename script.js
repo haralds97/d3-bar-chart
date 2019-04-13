@@ -1,5 +1,8 @@
-const projectName = 'bar-chart';
-localStorage.setItem('example_project', 'D3: Bar Chart');
+// var d3 = require("d3");
+// import d3 from "d3";
+
+// const projectName = 'bar-chart';
+// localStorage.setItem('example_project', 'D3: Bar Chart');
 // coded by @Christian-Paul 
 
 
