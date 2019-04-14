@@ -24,22 +24,28 @@ var svgContainer =  d3.select('.visHolder')
     .attr('width', width + 100)
     .attr('height', height + 60);
 
+// accessing data from API
 d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json', function(err, data) {
   
+  // text at the left - created here
   svgContainer.append('text')
     .attr('transform', 'rotate(-90)')
     .attr('x', -200)
     .attr('y', 80)
     .text('Gross Domestic Product');
   
+  // text at the bottom - created here
   svgContainer.append('text')
     .attr('x', width/2 + 120)
     .attr('y', height + 50)
     .text('More Information: http://www.bea.gov/national/pdf/nipaguid.pdf')
     .attr('class', 'info');
   
-  var years = data.data.map(function(item) {
+  // mapping years from API json. First 'data' refers to line 28 definition of all json file as 'data'. second 'data' refers to a 'key' by name 'data' in the json file.
+  var years = data.data.map(item => {
     var quarter;
+
+    // temporary variable to 'slice' some part of json API data
     var temp = item[0].substring(5, 7);
     
     if(temp === '01') {
@@ -55,25 +61,43 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
       quarter = 'Q4';
     }
 
+    // second part of mapping function which results in 'var years'
     return item[0].substring(0, 4) + ' ' + quarter
   });
   
+
+  // mapping years from API json. First 'data' refers to line 28 definition of all json file as 'data'. second 'data' refers to a 'key' by name 'data' in the json file.
   var yearsDate = data.data.map(function(item) {
+   
+   // a way to return a 'Date()' with specified date - taken from the array inside 'data', which looks like this - so we grap a 'year-month-date'
+  // "data": [
+  //   [
+  //     "1947-01-01",
+  //     243.1
+  //   ],
     return new Date(item[0]);
   });
 
+  // calling a 'max()' in-built function of d3, to find the MAX year&quarter from 'yearsDate'. First saving it in 'Date()' format. and then in a 'var xMax' - for setting maximum for 'x axis'.
   var xMax = new Date(d3.max(yearsDate));
+  
+  // javascript in-built methods 'setMonth' and 'getMonth'. First we 'getMonth' from 'var xMax' and add 3 months to it. Then we use this value to 'setMonth()' for xMax... ? - basically just adding 3 months to 'xMax'?
   xMax.setMonth(xMax.getMonth() + 3);
+
+  // 'scaleTime' is a d3 function. Basically we use minimum year and maximum year to set domain. and then map it to the range, and 'width' was set to '800' up in the code
   var xScale = d3.scaleTime()
     .domain([d3.min(yearsDate), xMax])
     .range([0, width]);
   
+  // creating 'x Axis' with 'axisBottom()' method of d3
   var xAxis = d3.axisBottom()
     .scale(xScale);
   
+    // creating horizontal line with 'g'
   var xAxisGroup = svgContainer.append('g')
     .call(xAxis)
     .attr('id', 'x-axis')
+    // moving it 60px right on x axis, and 400px down on y axis
     .attr('transform', 'translate(60, 400)');
   
   var GDP = data.data.map(function(item) {
