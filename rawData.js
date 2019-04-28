@@ -1,261 +1,29 @@
 
-// import { duplicateData, emotionsAtTime } from './rawData.js';
-// const { duplicateData, emotionsAtTime} = require('rawData.js');
+// tabula - uz y ass: dienas laiki - no 9:00 rītā līdz 00:00.
+// uz x ass  - datumi, par kuriem ir ieraksti
 
-// var d3 = require("d3");
-// import d3 from "d3";
+// attēlo pēdējps 16 ierakstus
 
-// const projectName = 'bar-chart';
-// localStorage.setItem('example_project', 'D3: Bar Chart');
-// coded by @Christian-Paul 
+// labās emocijas iezīmētas ar zaļu taisnstūri - vertikāli 3 viens uz otra - sākot ar 1 emociju, 2 emociju, 3, emociju. 
 
+// tāpat sliktās emocijas - ar pelēku, vai sārtu. vai + un – atzīmes.
 
+// kad ar kursoru uzbrauc virsū - tad parādās tooltip - kas tā par emociju.
 
-// declared 'width', 'height', and 'GDP barwidth'
-var yMargin = 40;
-var width = 800;
-var height = 400;
-var barWidth = width/19;
-
-// 'tooltip' is a small pop-up which shows when cursor or pointer goes over some object. The width, height and other properties of this 'tooltip' are defined in the style.css file. ('tooltip' is a random name here - could be named other ways). https://www.w3schools.com/howto/howto_css_tooltip.asp 
-// we are selecting a class '.visHolder' which is is index.html --> and appending 'div' with an 'id' of 'tooltip'
-var tooltip = d3.select(".visHolder").append("div")
-  .attr("id", "tooltip")
-  .style("opacity", 0);
-
-var overlay = d3.select('.visHolder').append('div')
-  .attr('class', 'overlay')
-  .style('opacity', 0);
-
-// declaring the 'svg', and setting its 'width' and 'height' - based on previously defined.
-var svgContainer =  d3.select('.visHolder')
-    .append('svg')
-    .attr('width', width + 100)
-    .attr('height', height + 60);
-
-// accessing data from API
-d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/GDP-data.json', function(err, data) {
-  
-  // text at the left - created here
-  svgContainer.append('text')
-    .attr('transform', 'rotate(-90)')
-    .attr('x', -200)
-    .attr('y', 80)
-    .text('Pulksteņa laiki');
-  
-  // text at the bottom - created here
-  svgContainer.append('text')
-    .attr('x', width/2 + 220)
-    .attr('y', height + 50)
-    .text('More Information: no Mood-Tracker app')
-    .attr('class', 'info');
-  
-  // mapping years from API json. First 'data' refers to line 28 definition of all json file as 'data'. second 'data' refers to a 'key' by name 'data' in the json file.
-  // var years = data.data.map(item => {
-  //   var quarter;
-
-  //   // temporary variable to 'slice' some part of json API data
-  //   var temp = item[0].substring(5, 7);
-    
-  //   if(temp === '01') {
-  //     quarter = 'Q1';
-  //   }
-  //   else if (temp === '04'){
-  //     quarter = 'Q2';
-  //   }
-  //   else if(temp === '07') {
-  //     quarter = 'Q3';
-  //   }
-  //   else if(temp ==='10') {
-  //     quarter = 'Q4';
-  //   }
-
-  //   // second part of mapping function which results in 'var years'
-  //   return item[0].substring(0, 4) + ' ' + quarter
-  // });
-  
-
-  // mapping years from API json. First 'data' refers to line 28 definition of all json file as 'data'. second 'data' refers to a 'key' by name 'data' in the json file.
-  var yearsDate = data.data.map(function(item) {
-   
-   // a way to return a 'Date()' with specified date - taken from the array inside 'data', which looks like this - so we grap a 'year-month-date'
-  // "data": [
-  //   [
-  //     "1947-01-01",
-  //     243.1
-  //   ],
-    return new Date(item[0]);
-  });
-
-  // calling a 'max()' in-built function of d3, to find the MAX year&quarter from 'yearsDate'. First saving it in 'Date()' format. and then in a 'var xMax' - for setting maximum for 'x axis'.
-  // var xMax = new Date(d3.max(yearsDate));
-  var xMax = new Date(d3.max(sampleTicksForXaxis));
-
-  // javascript in-built methods 'setMonth' and 'getMonth'. First we 'getMonth' from 'var xMax' and add 3 months to it. Then we use this value to 'setMonth()' for xMax... ? - basically just adding 3 months to 'xMax'?
-  // xMax.setMonth(xMax.getMonth() + 3);
-
-  // 'scaleTime' is a d3 function. Basically we use minimum year and maximum year to set domain. and then map it to the range, and 'width' was set to '800' up in the code
-  
- 
-
-  var xScale = d3.scaleTime()
-    // .domain([d3.min(yearsDate), xMax])
-    .domain([d3.min(sampleTicksForXaxis), xMax])    
-    .range([0, width]);
-
-  // code snippet from stack overflow to get different time formats for 'x' axis
-  
-  // var scaleX = d3.scaleTime().range([0, width]);
-  // var axisBottom = d3.axisBottom(scaleX)
-  //              .ticks(d3.timeMinute, 10); // Every 10 minutes
+// šeit pat apakšā varētu logu - biežākās labās emocijas, un biežākās sliktās emocijas.
 
 
-  // creating 'x Axis' with 'axisBottom()' method of d3
-  var xAxis = d3.axisBottom()
-    .scale(xScale);
-    // .ticks(d3.timeMinute, 10);
-  
-    // creating horizontal line with 'g'
-  var xAxisGroup = svgContainer.append('g')
-    .call(xAxis)
-    .attr('id', 'x-axis')
-    // moving it 60px right on x axis, and 400px down on y axis
-    .attr('transform', 'translate(60, 400)');
-  
+// let duplicateDataSlicedClock = duplicateData => duplicateData.map(item => item.timestamp.slice(0,11));
 
-  // mapping over API json file, and returning the 'GDP' by quarters
-  var GDP = data.data.map(function(item) {
-    return item[1]
-  });
-  
-  // declaring empty array.. for.. what?
-  // var scaledGDP = [];
-  let scaleDayTimes = []
-  
-  // finding 'min' and 'max' of 'GDP' to find how high can be the table in vertical dimension
-  // pārvērst šo par min / max pulksteņa laiku par ko ir pieraksti
-  // var gdpMin = d3.min(GDP);
-  // var gdpMax = d3.max(GDP);
-  let timeMin = d3.min(goodTimesToNumbers);
-  let timeMax = d3.max(goodTimesToNumbers);
-
-  // create a 'linearScale' where domain is mapped onto 'range'.
-  var linearScale = d3.scaleLinear()
-    .domain([timeMin, timeMax])
-    .range([0, height]);
-  
-  // scaled GDP values are returned for displaying
-  scaleDayTimes = goodTimesToNumbers.map(function(item) {
-    return linearScale(item);
-  });
-  
-  // getting values for 'y' axis
-  var yAxisScale = d3.scaleLinear()
-    .domain([timeMin, timeMax])
-    .range([height, 0]);
-  
-  // declaring 'yAxis' with previousy defined values
-  var yAxis = d3.axisLeft(yAxisScale)
-    
-  // appending group to 'svgContainer' with 'yAxis'
-  var yAxisGroup = svgContainer.append('g')
-    .call(yAxis)
-    .attr('id', 'y-axis')
-    .attr('transform', 'translate(60, 0)');
-    
+// let emotionsAtTime2 = (duplicateData) => duplicateData.map(item => 
+//     item.map(elem => 
+//         (elem === timestamp ?
+//         elem.slice(0,10) : elem)
+//     )
+// );
 
 
 
-  // creating many 'rect' and filling them all with data, and displaying
-  d3.select('svg').selectAll('rect')
-    .data(scaleDayTimes)
-    .enter()
-    // creating and appending as many as necessary 'rect' in this step
-    .append('rect')
-    
-    // attr 'dates' to rects
-    .attr('data-date', function(d, i) {
-      return goodTimes[i];
-    })
-    // attr gdp to rects
-    .attr('data-gdp', function(d, i) {
-      // return data.data[i][1];
-      return sampleTicksForXaxis[i];
-    })
-    
-    // attr css 'class' of 'bar' to all 'rect'
-    .attr('class', 'bar')
-    // assigning value to every 'x', by looping over 'yearsDate'
-    .attr('x', function(d, i) {
-      // return xScale(yearsDate[i]);
-      return xScale(sampleTicksForXaxis[i]);
-      // return xScale(datesOfRecords[i]);      
-    })
-     // assigning value to every 'y', by subtracting 'd' from 'height' - inverting 'y', so that it starts from bottom axis upwards
-    .attr('y', function(d, i) {
-      return height - d - 40;
-    })
-
-    // assigning value to every 'bar', assigning 'd' to 'height'
-    .attr('width', barWidth)
-    .attr('height', 40)
-    // filling rect with blue color
-    .style('fill', '#33adff')
-    .attr('transform', 'translate(60, 0)')
-       
-
-    // second assignment
-    
-
-
-     // styling on 'mouseover' event
-    .on('mouseover', function(d, i) {
-      
-      overlay.transition()
-        .duration(0)
-        .style('height', d + 'px')
-        .style('width', barWidth + 'px')
-        .style('opacity', .9)
-        .style('left', (i * barWidth) + 0 + 'px')
-        .style('top', height - d + 'px')
-        .style('transform', 'translateX(60px)');
-
-      tooltip.transition()
-        .duration(200)
-        .style('opacity', .9);
-      
-
-      tooltip.html(sampleTicksForXaxis[i] + '<br>' + firstGoodEmotion[1] + '<br>' + secondGoodEmotion[2] +
-          '<br>' + thirdGoodEmotion[3])
-        .attr('data-date', sampleTicksForXaxis[i])
-        .style('left', (i * barWidth) + 30 + 'px')
-        .style('top', height - 100 + 'px')
-        .style('transform', 'translateX(60px)');
-    })
-    // styling on 'mouseout' event
-    .on('mouseout', function(d) {
-      
-      tooltip.transition()
-        .duration(200)
-        .style('opacity', 0);
-      
-      overlay.transition()
-        .duration(200)
-        .style('opacity', 0);
-    });
-
-});
-
-
-
-
-let goodTimes = ["18:00", "13:00", "14:00", "16:00", "18:00", "14:00", "17:00", "17:00", "12:00", "16:00", "13:00", "15:00", "15:00", "19:00", "9:00", "12:00", "14:00", "15:00"];
-
-let goodTimesToNumbers = goodTimes.map(item => +item.slice(0, -3));
-
-let sampleTicksForXaxis = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17, 18, 19];
-
-// duplicate data .... long file
 
 let duplicateData = [ { id: 135,
     gulet: '',
@@ -1001,13 +769,14 @@ let emotionsAtTime = (duplicateData) => duplicateData.map(item => ({
 
 let timesOfGoodEmotions = duplicateData => duplicateData.map(item => item.cik2vl);
 
-let firstGoodEmotion = duplicateData => duplicateData.map(item => item.le1);
-
-let secondGoodEmotion = duplicateData => duplicateData.map(item => item.le2);
-
-let thirdGoodEmotion = duplicateData => duplicateData.map(item => item.le3);
 
 let datesOfRecords = duplicateData => duplicateData.map(item => item.timestamp.slice(0, 10));
 
+// module.exports = {
+//     duplicateData,
+//     emotionsAtTime
+// };
 
-// let datesOfRecords = ["2019-04-19", "2019-01-29", "2019-01-30", "2019-02-01", "2019-02-02", "2019-02-03", "2019-02-04", "2019-02-07", "2019-02-07", "2019-02-08", "2019-02-18", "2019-04-04", "2019-04-06", "2019-04-06", "2019-04-10", "2019-04-10", "2019-04-13", "2019-04-13", "2019-04-16", "2019-04-18"];
+// ## data types for d3;
+// https://www.dashingd3js.com/data-structures-d3js-accepts
+
