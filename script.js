@@ -38,15 +38,29 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
     .text('More Information: no Mood-Tracker app')
     .attr('class', 'info');
   
-  var xScale = d3.scaleTime()
+  let myValuesForTicks = datesOfRecords2 => (item, index => index * 30);
+
+  var xScale = d3.scaleOrdinal()
     // .domain([d3.min(yearsDate), xMax])
-    .domain([d3.min(sampleTicksForXaxis), d3.max(sampleTicksForXaxis)])    
-    .range([0, width]);
+    // .domain([d3.min(sampleTicksForXaxis), d3.max(sampleTicksForXaxis)])    
+    .domain(datesOfRecords2)    
+    // .range([0, 22, 44, 66, 88, 120, 142, 164, 186, 208, 230, 252, width]);
+    .range(myValuesForTicks);
+
+ // var xScale = d3.scale().domain(d3.min(sampleTicksForXaxis), d3.max(sampleTicksForXaxis)) 
+ //    .rangePoints([0,width]);
 
     // creating 'x Axis' with 'axisBottom()' method of d3
   var xAxis = d3.axisBottom()
-    .scale(xScale);
-  
+    .scale(xScale)
+    .tickValues(datesOfRecords2);
+    // to create a custom number of 'ticks' - the default is '10'
+    // xAxis.ticks(20);
+    // xAxis.tickValues([datesOfRecords2]);
+
+
+
+
     // creating horizontal line with 'g'
   var xAxisGroup = svgContainer.append('g')
     .call(xAxis)
@@ -926,4 +940,8 @@ let thirdGoodEmotion = duplicateData => duplicateData.map(item => item.le3);
 let datesOfRecords = duplicateData => duplicateData.map(item => item.timestamp.slice(0, 10));
 
 
-// let datesOfRecords = ["2019-04-19", "2019-01-29", "2019-01-30", "2019-02-01", "2019-02-02", "2019-02-03", "2019-02-04", "2019-02-07", "2019-02-07", "2019-02-08", "2019-02-18", "2019-04-04", "2019-04-06", "2019-04-06", "2019-04-10", "2019-04-10", "2019-04-13", "2019-04-13", "2019-04-16", "2019-04-18"];
+let datesOfRecords2 = ["2019-04-19", "2019-01-29", "2019-01-30", "2019-02-01", "2019-02-02", "2019-02-03", "2019-02-04", "2019-02-07", "2019-02-07", "2019-02-08", "2019-02-18", "2019-04-04", "2019-04-06", "2019-04-06", "2019-04-10", "2019-04-10", "2019-04-13", "2019-04-13", "2019-04-16", "2019-04-18"];
+
+let datesOutOfStrings = datesOfRecords2 => datesOfRecords2.map(item => new Date(item));
+
+let objectOfDates = {...datesOfRecords2};
