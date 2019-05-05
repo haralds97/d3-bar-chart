@@ -5,6 +5,7 @@ var yMargin = 40;
 var width = 800;
 var height = 400;
 var barWidth = width/18;
+// var barWidth = 30;
 
 
 var tooltip = d3.select(".visHolder").append("div")
@@ -38,14 +39,16 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
     .text('More Information: no Mood-Tracker app')
     .attr('class', 'info');
   
-  let myValuesForTicks = datesOfRecords2 => (item, index => index * 30);
+  // let myValuesForTicks = datesOfRecords2 => (item, index => index * 30);
 
+  
   var xScale = d3.scaleOrdinal()
     // .domain([d3.min(yearsDate), xMax])
     // .domain([d3.min(sampleTicksForXaxis), d3.max(sampleTicksForXaxis)])    
     .domain(datesOfRecords2)    
-    // .range([0, 22, 44, 66, 88, 120, 142, 164, 186, 208, 230, 252, width]);
-    .range(myValuesForTicks);
+    // .range([0, 22, 44, 66, 88, 120, 142, 164, 186, 208, 230, 252, 274, 296, 318, 340, 362, 384, 406]);
+    // .range(tickPoints2);
+    .range(datesOfRecords2.map((item, index) => index * barWidth));
 
  // var xScale = d3.scale().domain(d3.min(sampleTicksForXaxis), d3.max(sampleTicksForXaxis)) 
  //    .rangePoints([0,width]);
@@ -54,6 +57,7 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
   var xAxis = d3.axisBottom()
     .scale(xScale)
     .tickValues(datesOfRecords2);
+    // .tickValues(datesOfRecords2.map(item => item.slice(5, 10)));
     // to create a custom number of 'ticks' - the default is '10'
     // xAxis.ticks(20);
     // xAxis.tickValues([datesOfRecords2]);
@@ -110,7 +114,7 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
     // attr gdp to rects
     .attr('data-gdp', function(d, i) {
       // return data.data[i][1];
-      return sampleTicksForXaxis[i];
+      return datesOfRecords2[i];
     })
     
     // attr css 'class' of 'bar' to all 'rect'
@@ -118,7 +122,7 @@ d3.json('https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/mas
     // assigning value to every 'x', by looping over 'yearsDate'
     .attr('x', function(d, i) {
       // return xScale(yearsDate[i]);
-      return xScale(sampleTicksForXaxis[i]);
+      return xScale(datesOfRecords2[i]);
       // return xScale(datesOfRecords[i]);      
     })
      // assigning value to every 'y', by subtracting 'd' from 'height' - inverting 'y', so that it starts from bottom axis upwards
@@ -939,8 +943,11 @@ let thirdGoodEmotion = duplicateData => duplicateData.map(item => item.le3);
 
 let datesOfRecords = duplicateData => duplicateData.map(item => item.timestamp.slice(0, 10));
 
+let datesOfRecords3 = ["04-19", "01-29", "01-30", "02-01", "02-02", "02-03", "02-04", "02-07", "02-07", "02-08", "02-18", "04-04", "04-06", "04-06", "04-10", "04-10", "04-13", "04-13", "04-16", "04-18"];
 
 let datesOfRecords2 = ["2019-04-19", "2019-01-29", "2019-01-30", "2019-02-01", "2019-02-02", "2019-02-03", "2019-02-04", "2019-02-07", "2019-02-07", "2019-02-08", "2019-02-18", "2019-04-04", "2019-04-06", "2019-04-06", "2019-04-10", "2019-04-10", "2019-04-13", "2019-04-13", "2019-04-16", "2019-04-18"];
+
+const tickPoints2 = (datesOfRecords2) => datesOfRecords2.map((item, index) => index * 30);
 
 let datesOutOfStrings = datesOfRecords2 => datesOfRecords2.map(item => new Date(item));
 
